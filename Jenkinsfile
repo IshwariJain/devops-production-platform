@@ -16,5 +16,11 @@ pipeline {
                 '''
             }
         }
+
+        stage('Test') {
+            steps {
+                sh './scripts/run_tests.sh'
+            }
+        }
     }
 }
