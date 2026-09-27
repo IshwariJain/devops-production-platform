@@ -22,5 +22,23 @@ pipeline {
                 sh './scripts/run_tests.sh'
             }
         }
+
+        stage('Docker Build') {
+            steps {
+                sh '''
+                    echo "===== Building Docker Image ====="
+                    docker build -t devops-flask-app:ci ./app
+                '''
+            }
+        }
+
+        stage('Image Validation') {
+            steps {
+                sh '''
+                    echo "===== Validating Docker Image ====="
+                    docker image inspect devops-flask-app:ci
+                '''
+            }
+        }
     }
 }
