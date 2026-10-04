@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        APP_NAME = 'devops-flask-app'
+    }
+
     stages {
         stage('Checkout Verification') {
             steps {
@@ -19,11 +23,18 @@ pipeline {
 
         stage('Build Information') {
             steps {
+                script {
+                    env.GIT_SHA = sh(
+                        script: 'git rev-parse --short HEAD',
+                        returnStdout: true
+                    ).trim()
+                }
+
                 sh '''
                     echo "===== Build Information ====="
                     echo "Jenkins Build Number: $BUILD_NUMBER"
-                    echo "Git Commit: $(git rev-parse HEAD)"
-                    echo "Short Git Commit: $(git rev-parse --short HEAD)"
+                    echo "Git SHA: $GIT_SHA"
+                    echo "Application Name: $APP_NAME"
                 '''
             }
         }
@@ -38,11 +49,13 @@ pipeline {
             steps {
                 sh '''
                     echo "===== Building Docker Image ====="
-                    GIT_SHA=$(git rev-parse --short HEAD)
-
                     echo "Build Number Tag: $BUILD_NUMBER"
                     echo "Git SHA Tag: $GIT_SHA"
-                    docker build -t devops-flask-app:$BUILD_NUMBER -t devops-flask-app:$GIT_SHA ./app
+
+                    docker build \
+                        -t $APP_NAME:$BUILD_NUMBER \
+                        -t $APP_NAME:$GIT_SHA \
+                        ./app
                 '''
             }
         }
@@ -50,9 +63,11 @@ pipeline {
         stage('Image Validation') {
             steps {
                 sh '''
-                    echo "===== Validating Docker Image ====="
-                    echo "GIT_SHA from previous stage: $GIT_SHA"
-                    docker image inspect devops-flask-app:$BUILD_NUMBER
+                    echo "===== Validating Docker Images ====="
+                    echo "GIT_SHA in validation stage: $GIT_SHA"
+
+                    docker image inspect $APP_NAME:$BUILD_NUMBER
+                    docker image inspect $APP_NAME:$GIT_SHA
                 '''
             }
         }
