@@ -17,6 +17,17 @@ pipeline {
             }
         }
 
+        stage('Build Information') {
+            steps {
+                sh '''
+                    echo "===== Build Information ====="
+                    echo "Jenkins Build Number: $BUILD_NUMBER"
+                    echo "Git Commit: $(git rev-parse HEAD)"
+                    echo "Short Git Commit: $(git rev-parse --short HEAD)"
+                '''
+            }
+        }
+
         stage('Test') {
             steps {
                 sh './scripts/run_tests.sh'
@@ -27,7 +38,7 @@ pipeline {
             steps {
                 sh '''
                     echo "===== Building Docker Image ====="
-                    docker build -t devops-flask-app:ci ./app
+                    docker build -t devops-flask-app:$BUILD_NUMBER ./app
                 '''
             }
         }
@@ -36,7 +47,7 @@ pipeline {
             steps {
                 sh '''
                     echo "===== Validating Docker Image ====="
-                    docker image inspect devops-flask-app:ci
+                    docker image inspect devops-flask-app:$BUILD_NUMBER
                 '''
             }
         }
