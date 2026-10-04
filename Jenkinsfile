@@ -47,7 +47,7 @@ pipeline {
             steps {
                 sh '''
                     echo "===== Validating Docker Image ====="
-                    docker image inspect devops-flask-app:$BUILD_NUMBER
+                    docker image inspect devops-flask-app:wrong-$BUILD_NUMBER
                 '''
             }
         }
