@@ -51,6 +51,7 @@ pipeline {
             steps {
                 sh '''
                     echo "===== Validating Docker Image ====="
+                    echo "GIT_SHA from previous stage: $GIT_SHA"
                     docker image inspect devops-flask-app:$BUILD_NUMBER
                 '''
             }
