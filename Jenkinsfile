@@ -38,7 +38,11 @@ pipeline {
             steps {
                 sh '''
                     echo "===== Building Docker Image ====="
-                    docker build -t devops-flask-app:$BUILD_NUMBER ./app
+                    GIT_SHA=$(git rev-parse --short HEAD)
+
+                    echo "Build Number Tag: $BUILD_NUMBER"
+                    echo "Git SHA Tag: $GIT_SHA"
+                    docker build -t devops-flask-app:$BUILD_NUMBER -t devops-flask-app:$GIT_SHA ./app
                 '''
             }
         }
