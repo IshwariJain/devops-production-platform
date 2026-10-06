@@ -74,8 +74,7 @@ pipeline {
 
                     docker run -d \
                         --name $TEST_CONTAINER \
-                        $APP_NAME:$BUILD_NUMBER \
-                        sh -c 'echo "Intentional runtime failure"; exit 1'
+                        $APP_NAME:$BUILD_NUMBER
 
                     echo "Waiting for application health check..."
 
