@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         APP_NAME = 'devops-flask-app'
+        TEST_CONTAINER = 'devops-flask-runtime-test'
     }
 
     stages {
@@ -68,6 +69,47 @@ pipeline {
 
                     docker image inspect $APP_NAME:$BUILD_NUMBER
                     docker image inspect $APP_NAME:$GIT_SHA
+                '''
+            }
+        }
+
+        stage('Runtime Validation') {
+            steps {
+                sh '''
+                    echo "===== Runtime Validation ====="
+
+                    docker rm -f $TEST_CONTAINER 2>/dev/null || true
+
+                    docker run -d \
+                        --name $TEST_CONTAINER \
+                        $APP_NAME:$BUILD_NUMBER
+
+                    echo "Waiting for application health check..."
+
+                    for i in 1 2 3 4 5 6; do
+                        STATUS=$(docker inspect \
+                            --format='{{.State.Health.Status}}' \
+                            $TEST_CONTAINER)
+
+                        echo "Health status: $STATUS"
+
+                        if [ "$STATUS" = "healthy" ]; then
+                            echo "Runtime validation passed"
+                            exit 0
+                        fi
+
+                        if [ "$STATUS" = "unhealthy" ]; then
+                            echo "Runtime validation failed"
+                            docker logs $TEST_CONTAINER
+                            exit 1
+                        fi
+
+                        sleep 5
+                    done
+
+                    echo "Timed out waiting for healthy container"
+                    docker logs $TEST_CONTAINER
+                    exit 1
                 '''
             }
         }
