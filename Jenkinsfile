@@ -112,6 +112,15 @@ pipeline {
                     exit 1
                 '''
             }
+
+            post {
+                always {
+                    sh '''
+                        echo "===== Cleaning Up Runtime Test Container ====="
+                        docker rm -f $TEST_CONTAINER 2>/dev/null || true
+                    '''
+                }
+            }
         }
     }
 }
