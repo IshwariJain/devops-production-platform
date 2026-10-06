@@ -1,11 +1,9 @@
 pipeline {
     agent any
-
     environment {
         APP_NAME = 'devops-flask-app'
         TEST_CONTAINER = 'devops-flask-runtime-test'
     }
-
     stages {
         stage('Checkout Verification') {
             steps {
@@ -21,7 +19,6 @@ pipeline {
                 '''
             }
         }
-
         stage('Build Information') {
             steps {
                 script {
@@ -30,7 +27,6 @@ pipeline {
                         returnStdout: true
                     ).trim()
                 }
-
                 sh '''
                     echo "===== Build Information ====="
                     echo "Jenkins Build Number: $BUILD_NUMBER"
@@ -39,13 +35,11 @@ pipeline {
                 '''
             }
         }
-
         stage('Test') {
             steps {
                 sh './scripts/run_tests.sh'
             }
         }
-
         stage('Docker Build') {
             steps {
                 sh '''
@@ -60,7 +54,6 @@ pipeline {
                 '''
             }
         }
-
         stage('Image Validation') {
             steps {
                 sh '''
@@ -72,7 +65,6 @@ pipeline {
                 '''
             }
         }
-
         stage('Runtime Validation') {
             steps {
                 sh '''
@@ -82,7 +74,8 @@ pipeline {
 
                     docker run -d \
                         --name $TEST_CONTAINER \
-                        $APP_NAME:$BUILD_NUMBER
+                        $APP_NAME:$BUILD_NUMBER \
+                        sh -c 'echo "Intentional runtime failure"; exit 1'
 
                     echo "Waiting for application health check..."
 
@@ -112,7 +105,6 @@ pipeline {
                     exit 1
                 '''
             }
-
             post {
                 always {
                     sh '''
