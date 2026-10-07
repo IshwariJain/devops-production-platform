@@ -78,8 +78,8 @@ pipeline {
                 sh '''
                     echo "===== Checking Runtime Prerequisites ====="
 
-                    if ! docker network inspect ci-network >/dev/null 2>&1; then
-                        echo "ERROR: Required Docker network 'ci-network' does not exist"
+                    if ! docker network inspect definitely-not-a-real-network >/dev/null 2>&1; then
+                        echo "ERROR: Required Docker network 'definitely-not-a-real-network' does not exist"
                         exit 1
                     fi
 
