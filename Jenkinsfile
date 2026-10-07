@@ -73,6 +73,21 @@ pipeline {
             }
         }
 
+        stage('Runtime Prerequisites') {
+            steps {
+                sh '''
+                    echo "===== Checking Runtime Prerequisites ====="
+
+                    if ! docker network inspect ci-network >/dev/null 2>&1; then
+                        echo "ERROR: Required Docker network 'ci-network' does not exist"
+                        exit 1
+                    fi
+
+                    echo "Docker network 'ci-network' exists"
+                '''
+            }
+        }
+
         stage('Runtime Validation') {
             steps {
                 sh '''
