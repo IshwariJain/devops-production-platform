@@ -4,6 +4,7 @@ pipeline {
     environment {
         APP_NAME = 'devops-flask-app'
         TEST_CONTAINER = 'devops-flask-runtime-test'
+        AWS_DEFAULT_REGION = 'ap-south-1'
     }
 
     stages {
@@ -142,6 +143,61 @@ pipeline {
                     sh '''
                         echo "===== Cleaning Up Runtime Test Container ====="
                         docker rm -f $TEST_CONTAINER 2>/dev/null || true
+                    '''
+                }
+            }
+        }
+
+        stage('Push to AWS ECR') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'aws-ecr-credentials',
+                        usernameVariable: 'AWS_ACCESS_KEY_ID',
+                        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                    )
+                ]) {
+                    sh '''#!/usr/bin/bash
+                        set -euo pipefail
+
+                        echo "===== AWS Identity Verification ====="
+
+                        aws sts get-caller-identity \
+                            --query Arn \
+                            --output text
+
+                        echo "===== ECR Repository ====="
+
+                        AWS_ACCOUNT_ID=$(aws sts get-caller-identity \
+                            --query Account --output text)
+
+                        ECR_REGISTRY="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
+                        ECR_REPOSITORY="$ECR_REGISTRY/$APP_NAME"
+
+                        echo "===== Login to AWS ECR ====="
+
+                        aws ecr get-login-password \
+                            --region "$AWS_DEFAULT_REGION" |
+                            docker login \
+                                --username AWS \
+                                --password-stdin "$ECR_REGISTRY"
+
+                        echo "===== Tag Docker Images ====="
+
+                        docker tag \
+                            "$APP_NAME:$BUILD_NUMBER" \
+                            "$ECR_REPOSITORY:$BUILD_NUMBER"
+
+                        docker tag \
+                            "$APP_NAME:$GIT_SHA" \
+                            "$ECR_REPOSITORY:$GIT_SHA"
+
+                        echo "===== Push Images to AWS ECR ====="
+
+                        docker push "$ECR_REPOSITORY:$BUILD_NUMBER"
+                        docker push "$ECR_REPOSITORY:$GIT_SHA"
+
+                        echo "===== ECR Push Successful ====="
                     '''
                 }
             }
