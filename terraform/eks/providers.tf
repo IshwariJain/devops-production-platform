@@ -10,4 +10,11 @@ terraform {
 provider "aws" {
   region  = "ap-south-1"
   profile = "devops-project"
+
+  default_tags {
+    tags = {
+      Project   = "devops-production-platform"
+      ManagedBy = "Terraform"
+    }
+  }
 }
