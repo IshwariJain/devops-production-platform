@@ -47,6 +47,12 @@ pipeline {
             }
         }
 
+        stage('PostgreSQL Integration Tests') {
+            steps {
+                sh './scripts/run_db_ci_tests.sh'
+            }
+        }
+
         stage('Docker Build') {
             steps {
                 sh '''

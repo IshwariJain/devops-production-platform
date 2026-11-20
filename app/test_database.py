@@ -13,6 +13,8 @@ def database():
     url = os.getenv("TEST_DATABASE_URL")
 
     if not url:
+        if os.getenv("REQUIRE_DB_TEST") == "1":
+            pytest.fail("TEST_DATABASE_URL is required in CI")
         pytest.skip("TEST_DATABASE_URL not configured")
 
     if "test" not in url.split("/")[-1].lower():
