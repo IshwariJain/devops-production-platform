@@ -1,3 +1,4 @@
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,8 +30,15 @@ spec:
 
           # Local kind image; use ECR image URI for AWS EKS deployment
           image: devops-flask-app:784a744
-
           imagePullPolicy: IfNotPresent
+
+          # Load non-sensitive configuration from ConfigMap
+          # Load database connection from Kubernetes Secret
+          envFrom:
+            - configMapRef:
+                name: devops-flask-config
+            - secretRef:
+                name: devops-flask-db-secret
 
           ports:
             - name: http
