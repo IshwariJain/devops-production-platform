@@ -5,7 +5,7 @@ appLabel: devops-flask-app
 
 image:
   repository: devops-flask-app
-  tag: "784a744"
+  tag: "55127b1"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []

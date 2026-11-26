@@ -3,4 +3,4 @@ name: devops-production-platform
 description: A reusable Helm chart for deploying the Flask task management application across Kubernetes environments.
 type: application
 version: 0.1.0
-appVersion: "784a744"
+appVersion: "55127b1"
