@@ -1,0 +1,66 @@
+replicaCount: 2
+
+deploymentName: devops-flask-app
+appLabel: devops-flask-app
+
+image:
+  repository: devops-flask-app
+  tag: "784a744"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+containerPort: 5000
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+service:
+  name: devops-flask-service
+  type: ClusterIP
+  port: 80
+
+configMapName: devops-flask-config
+
+config:
+  APP_ENV: "development"
+  LOG_LEVEL: "INFO"
+
+existingSecret: devops-flask-db-secret
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 3
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 15
+  periodSeconds: 20
+  timeoutSeconds: 3
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []
+  tls: []
+
+autoscaling:
+  enabled: false
