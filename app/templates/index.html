@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1120">
+    <title>DevOps Production Platform</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="brand">
+        <div class="brand-logo">DP</div>
+        <div>
+            <h1>DevOps Production Platform</h1>
+            <p>Task Management & Infrastructure Health</p>
+        </div>
+    </div>
+
+    <div class="environment">
+        <span class="environment-dot"></span>
+        Platform Dashboard
+    </div>
+</header>
+
+<main class="dashboard">
+
+    <section class="welcome">
+        <div>
+            <span class="eyebrow">OPERATIONS WORKSPACE</span>
+            <h2>Overview</h2>
+            <p>Manage your tasks and monitor application availability.</p>
+        </div>
+
+        <button id="refresh-btn" class="secondary-btn" type="button">
+            &#8635; Refresh Dashboard
+        </button>
+    </section>
+
+    <section class="health-grid" aria-label="Infrastructure health">
+
+        <article class="health-card">
+            <div class="health-icon">APP</div>
+            <div class="health-info">
+                <h3>Application Health</h3>
+                <p>Flask API availability</p>
+            </div>
+            <span id="app-health" class="health-status checking">
+                Checking...
+            </span>
+        </article>
+
+        <article class="health-card">
+            <div class="health-icon">DB</div>
+            <div class="health-info">
+                <h3>Database Health</h3>
+                <p>PostgreSQL connectivity</p>
+            </div>
+            <span id="db-health" class="health-status checking">
+                Checking...
+            </span>
+        </article>
+
+    </section>
+
+    <section class="stats-grid" aria-label="Task statistics">
+
+        <article class="stat-card total">
+            <span class="stat-label">Total Tasks</span>
+            <strong id="total-count">--</strong>
+            <span class="stat-description">All recorded tasks</span>
+        </article>
+
+        <article class="stat-card pending">
+            <span class="stat-label">Pending</span>
+            <strong id="pending-count">--</strong>
+            <span class="stat-description">Awaiting action</span>
+        </article>
+
+        <article class="stat-card in-progress">
+            <span class="stat-label">In Progress</span>
+            <strong id="progress-count">--</strong>
+            <span class="stat-description">Active work</span>
+        </article>
+
+        <article class="stat-card completed">
+            <span class="stat-label">Completed</span>
+            <strong id="completed-count">--</strong>
+            <span class="stat-description">Finished tasks</span>
+        </article>
+
+    </section>
+
+    <section class="workspace">
+
+        <article class="panel create-panel">
+
+            <div class="panel-heading">
+                <span class="eyebrow">TASK MANAGEMENT</span>
+                <h2>Create New Task</h2>
+                <p>Add a task to your operations workspace.</p>
+            </div>
+
+            <form id="task-form">
+
+                <div class="form-group">
+                    <label for="task-title">Task Title *</label>
+                    <input
+                        id="task-title"
+                        name="title"
+                        type="text"
+                        placeholder="e.g. Validate Kubernetes deployment"
+                        maxlength="200"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="task-description">Description</label>
+                    <textarea
+                        id="task-description"
+                        name="description"
+                        rows="5"
+                        placeholder="Describe the task..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="task-status">Status</label>
+                    <select id="task-status" name="status">
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+
+                <button id="create-btn" class="primary-btn" type="submit">
+                    + Create Task
+                </button>
+
+            </form>
+
+            <div class="form-note">
+                Tasks are stored in PostgreSQL through the Flask REST API.
+            </div>
+
+        </article>
+
+        <article class="panel tasks-panel">
+
+            <div class="panel-heading">
+                <span class="eyebrow">OPERATIONS</span>
+                <h2>Task Overview</h2>
+                <p>View and manage your recorded tasks.</p>
+            </div>
+
+            <div class="task-toolbar">
+
+                <input
+                    id="task-search"
+                    type="search"
+                    aria-label="Search tasks"
+                    placeholder="Search tasks...">
+
+                <select id="status-filter" aria-label="Filter by status">
+                    <option value="all">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
+
+            </div>
+
+            <div id="task-list" class="task-list" aria-live="polite">
+                <div class="empty-state">Loading tasks...</div>
+            </div>
+
+        </article>
+
+    </section>
+
+    <section class="technology-panel">
+
+        <div>
+            <span class="eyebrow">PLATFORM STACK</span>
+            <h3>Infrastructure & Delivery</h3>
+        </div>
+
+        <div class="technology-tags">
+            <span>Python</span>
+            <span>Flask</span>
+            <span>PostgreSQL</span>
+            <span>Docker</span>
+            <span>Jenkins</span>
+            <span>Kubernetes</span>
+            <span>Helm</span>
+            <span>AWS ECR</span>
+        </div>
+
+    </section>
+
+    <footer>
+        <span>DevOps Production Platform</span>
+        <span id="last-updated">Waiting for dashboard refresh</span>
+    </footer>
+
+</main>
+
+<div id="notification" class="notification" role="status"
+     aria-live="polite" hidden></div>
+
+</body>
+</html>

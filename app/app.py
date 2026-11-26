@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -17,7 +17,7 @@ engine = (
 
 @app.route("/")
 def home():
-    return {"message": "DevOps Production Platform is running!"}
+    return render_template("index.html")
 
 
 @app.route("/health")
